@@ -4,28 +4,16 @@ const fs = require('fs');
 //Import Express and create express app
 const express = require('express');
 const { dirname } = require('path');
-const exp = require('constants');
+
 const app = express();
-
 app.use(express.json());
-
-// Setting Up Express and Running a basic Server Lession
-{
-  // app.get('/', (req, res) => {
-  //   res
-  //     .status(200)
-  //     .json({ message: 'Hello form the server side!', names: ['Luke'] });
-  // });
-  // app.post('/', () => {
-  //     res.send('You can post to this endpoint...');
-  // })
-}
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+// Route Callback functions
+const getAllTours = function (req, res) {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -33,9 +21,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   const id = +req.params.id;
 
   if (id > tours.length) {
@@ -52,9 +40,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   // create the new object
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -75,9 +63,9 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   const id = +req.params.id;
 
   if (id > tours.length) {
@@ -93,10 +81,10 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: '<Updated tour here...>',
     },
   });
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
-    const id = +req.params.id;
+const deleteTour = (req, res) => {
+  const id = +req.params.id;
 
   if (id > tours.length) {
     return res.status(404).json({
@@ -107,9 +95,29 @@ app.delete('/api/v1/tours/:id', (req, res) => {
 
   res.status(204).json({
     status: 'success',
-    data: null
+    data: null,
   });
-})
+};
+
+// Route Handlers
+// Old way
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', createTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+// app.route('/api/v1/tours').post(createTour);
+// app.route('/api/v1/tours/:id').patch(updateTour);
+// app.route('/api/v1/tours/:id').delete(deleteTour);
+
+// Here we can chain these to handle
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 8000;
 app.listen(port, () => {
