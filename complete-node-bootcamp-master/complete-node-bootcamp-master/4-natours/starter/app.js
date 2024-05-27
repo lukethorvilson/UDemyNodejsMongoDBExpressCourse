@@ -4,7 +4,10 @@ const fs = require('fs');
 //Import Express and create express app
 const express = require('express');
 const { dirname } = require('path');
+const exp = require('constants');
 const app = express();
+
+app.use(express.json());
 
 // Setting Up Express and Running a basic Server Lession
 {
@@ -30,6 +33,29 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
+});
+
+app.post('/api/v1/tours', (req, res) => {
+  // create the new object
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, req.body);
+
+  // push the new object to the current api array
+  tours.push(newTour);
+
+  // write to the file the new api data using the new array
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
 });
 
 const port = 8000;
