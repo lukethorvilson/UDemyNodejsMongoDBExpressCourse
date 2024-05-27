@@ -35,6 +35,15 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
+app.get('/api/v1/tours/:id', (req, res) => {
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tours: tours.find(val => val.id === +req.params.id),
+      },
+    });
+  });
+
 app.post('/api/v1/tours', (req, res) => {
   // create the new object
   const newId = tours[tours.length - 1].id + 1;
