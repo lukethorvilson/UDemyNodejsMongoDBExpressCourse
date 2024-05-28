@@ -1,21 +1,12 @@
 const fs = require('fs');
+const Tour = require('./../models/tourModel');
 // Data
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
 //////////////Middleware function ////////////////
-exports.checkID = (req, res, next, val) => {
-  console.log(`Tour ID is ${val}`);
-  if (+val > tours.length && +val < 0) {
-    console.error('Invalid ID');
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Ivalid ID',
-    });
-  }
-  next();
-};
+
 
 exports.checkBody = (req, res, next) => {
   console.log(`In check body middleware...`);
