@@ -1,7 +1,6 @@
 // Core Modules
 const fs = require('fs');
 const morgan = require('morgan');
-const { dirname } = require('path');
 
 //Import Express and create express app
 const express = require('express');
@@ -9,17 +8,11 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(morgan)
-
-app.use((req,res, next) => {
-  console.log('Hello from the middleware!');
-  next();
-})
-
-app.use((req,res,next) => {
+app.use(morgan('dev'));
+app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
-})
+});
 
 // Data
 const tours = JSON.parse(
@@ -27,6 +20,8 @@ const tours = JSON.parse(
 );
 
 // Route Callback functions(handlers)
+
+// Tour handlers
 const getAllTours = function (req, res) {
   res.status(200).json({
     status: 'success',
@@ -114,14 +109,58 @@ const deleteTour = (req, res) => {
   });
 };
 
-// Routes
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+// User handlers
+const getAllUsers = function (req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented!',
+  });
+};
 
+const createUser = function (req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented!',
+  });
+};
+
+const getUser = function (req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented!',
+  });
+};
+
+const updateUser = function (req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented!',
+  });
+};
+
+const deleteUser = function (req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented!',
+  });
+};
+
+///////////// Routes /////////////////////
+// defining the routers
+const userRouter = express.Router();
+const tourRouter = express.Router();
+
+// Tours routes
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+// Users routes
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+
+// mounting the routes
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+// Start server
 const port = 8000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
