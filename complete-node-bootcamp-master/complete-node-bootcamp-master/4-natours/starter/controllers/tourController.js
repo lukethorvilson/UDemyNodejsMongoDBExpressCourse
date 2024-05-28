@@ -8,10 +8,22 @@ const tours = JSON.parse(
 exports.checkID = (req, res, next, val) => {
   console.log(`Tour ID is ${val}`);
   if (+val > tours.length && +val < 0) {
-    console.log('Invalid ID');
+    console.error('Invalid ID');
     return res.status(404).json({
       status: 'fail',
       message: 'Ivalid ID',
+    });
+  }
+  next();
+};
+
+exports.checkBody = (req, res, next) => {
+  console.log(`In check body middleware...`);
+  if (!req.body?.name || !req.body?.price) {
+    console.error('Invalid body! Missing name or price.');
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing name or price!',
     });
   }
   next();
