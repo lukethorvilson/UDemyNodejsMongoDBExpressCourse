@@ -2,25 +2,13 @@ const fs = require('fs');
 const Tour = require('./../models/tourModel');
 // Data
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
 //////////////Middleware function ////////////////
+// ... Nothing here now
 
-
-exports.checkBody = (req, res, next) => {
-  console.log(`In check body middleware...`);
-  if (!req.body?.name || !req.body?.price) {
-    console.error('Invalid body! Missing name or price.');
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Missing name or price!',
-    });
-  }
-  next();
-};
-
-/////////////// Handlers ////////////////////
+/////////////// Controllers ////////////////////
 exports.getAllTours = function (req, res) {
   res.status(200).json({
     status: 'success',
@@ -42,27 +30,27 @@ exports.getTour = (req, res) => {
   });
 };
 
-exports.createTour = (req, res) => {
+exports.createTour = async (req, res) => {
   // create the new object
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+  // const newId = tours[tours.length - 1].id + 1;
+  // const newTour = Object.assign({ id: newId }, req.body);
 
-  // push the new object to the current api array
-  tours.push(newTour);
-
-  // write to the file the new api data using the new array
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
+  // // push the new object to the current api array
+  // tours.push(newTour);
+  try {
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: "Invalid data sent!",
+    });
+  }
 };
 
 exports.updateTour = (req, res) => {
