@@ -1,18 +1,33 @@
 const fs = require('fs');
 const Tour = require('./../models/tourModel');
+const APIFeatures = require('./../util/apiFeatures');
+
 // Data
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
 //////////////Middleware function ////////////////
-// ... Nothing here now
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 
 /////////////// Controllers ////////////////////
 exports.getAllTours = async function (req, res) {
   try {
-    const tours = await Tour.find();
+    // EXCECUTE QUERY
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .pagination();
 
+    const tours = await features.query;
+
+    // SEND RESPONSE
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -87,7 +102,7 @@ exports.deleteTour = async (req, res) => {
     await Tour.findByIdAndDelete(req.params.id);
     res.status(204).json({
       status: 'success',
-      data: null
+      data: null,
     });
   } catch (err) {
     res.status(400).json({
