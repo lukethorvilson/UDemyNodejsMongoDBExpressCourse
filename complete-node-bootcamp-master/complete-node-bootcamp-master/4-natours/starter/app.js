@@ -1,12 +1,14 @@
 // Core Modules
+const express = require('express');
 const morgan = require('morgan');
-
+const AppError = require('./util/appError');
+const globalErrorHandler = require('./controllers/errorController');
 // IMPORTED ROUTERS
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 //Import Express and create express app
-const express = require('express');
+
 const app = express();
 
 // MIDDLEWARES
@@ -27,4 +29,10 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+app.all('*', (req, res, next) => {
+  next(new AppError(`Cant find ${req.originalUrl} on this server.`, 404));
+});
+
+// EXPRESS's error handling middleware
+app.use(globalErrorHandler);
 module.exports = app;
