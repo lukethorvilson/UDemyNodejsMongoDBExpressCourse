@@ -5,6 +5,7 @@ const router = express.Router();
 
 // Users routes
 router.post('/signup', authController.signup); // does not follow REST because it explains what it is doing
+router.post('/login', authController.login);
 router
   .route('/')
   .get(userController.getAllUsers)
