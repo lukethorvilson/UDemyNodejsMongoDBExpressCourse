@@ -1,8 +1,10 @@
 const express = require('express');
 const userController = require('./../controllers/userController');
+const authController = require('./../controllers/authController');
 const router = express.Router();
 
 // Users routes
+router.post('/signup', authController.signup); // does not follow REST because it explains what it is doing
 router
   .route('/')
   .get(userController.getAllUsers)
