@@ -28,8 +28,8 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a difficulty'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'The difficulty must be either easy, medium, or difficult.'
-      }
+        message: 'The difficulty must be either easy, medium, or difficult.',
+      },
     },
     ratingsAverage: {
       type: Number,
@@ -48,11 +48,11 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function(val) {
-          return val < this.price // 100 < 200
+        validator: function (val) {
+          return val < this.price; // 100 < 200
         },
-        message: 'The price must be greater than the discounted price'
-      }
+        message: 'The price must be greater than the discounted price',
+      },
     },
     summary: {
       type: String,
@@ -80,6 +80,30 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          defualt: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
