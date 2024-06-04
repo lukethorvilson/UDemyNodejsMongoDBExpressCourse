@@ -57,17 +57,17 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// this only shows users that are active when queying with the find methods
-userSchema.pre(/^find/, function (next) {
-  // this points to the current query
-  this.find({ active: {$ne: false} });
-  next();
-});
-
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
   // minus 1 second becuase sometimes the JWT is issued before the date is changed here
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+// this only shows users that are active when queying with the find methods
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
   next();
 });
 
